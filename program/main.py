@@ -8,6 +8,13 @@ import datetime
 import mysql.connector
 
 
+HOST, USER, PASSWD, DB = None, None, None, None
+
+DATABASE = Database(HOST, USER, PASSWD, DB)
+
+# to initialize db -> DATABASE.initialize_users()
+
+
 class RegistrationError(Exception):
     pass
 
@@ -167,7 +174,7 @@ GENERAL, ADDTASK, EDITTASK, ACCOUNTSETTINGS = 1, 2, 3, 4
 DEFAULT_DICTIONARY = {'0': 'o', '1': 'n', '2': 't', '3': 'h', '4': 'f', '5': 'i', '6': 's', '7': 'e', '8': 'i',
                       '9': 'j'}
 
-DATABASE = Database("mysql.joinserver.ru", "u16506_WJlKwJFums", "VVqhE6AITNy0ZfDE7njY3in0", "s16506_test")
+
 
 
 def to_formated_date(date):
