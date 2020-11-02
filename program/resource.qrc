@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>fox-1883658_640.jpg</file>
+    <file>IMG_20191229_125056-EFFECTS.jpg</file>
+  </qresource>
+</RCC>
