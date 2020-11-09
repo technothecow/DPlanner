@@ -1,18 +1,45 @@
 import random
 import sys
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore, QtGui, Qt
 from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5.QtWidgets import *
 import datetime
 import mysql.connector
 
+LOGIN_DPLANNER_LOGO_FONT = "75 40pt \"Uroob\""
+USING_ACCOUNT_LABEL_FONT = "75 14pt \"Uroob\""
+BUTTON_FONT = "75 22pt \"Uroob\""
 
-HOST, USER, PASSWD, DB = None, None, None, None
+MODE_BUTTONS_FONT = "20pt \"Laksaman\""
+MODE_BUTTONS_FONT_HOVER = "22pt \"Laksaman\""
+DPLANNER_LOGO_FONT = "0 40pt \"Manjari Thin\""
+SELECTED_MODE_LABEL_FONT = "40pt \"Laksaman\""
 
-DATABASE = Database(HOST, USER, PASSWD, DB)
+GENERAL_TODAY_LABEL_FONT = "30pt \"Laksaman\""
 
-# to initialize db -> DATABASE.initialize_users()
+ADDTASK_DATETIMEEDIT_FONT = "18pt \"Samyak Malayalam\""
+ADDTASK_LABELS_FONT = "18pt \"Noto Sans Mono CJK JP\""
+ADDTASK_LINEEDIT_FONT = "18pt \"Manjari\""
+ADDTASK_BUTTON_CONTINUE_FONT = "24pt \"Laksaman\""
+ADDTASK_BUTTON_CONTINUE_FONT_HOVER = "26pt \"Laksaman\""
+
+EDITTASK_SELECT_DATE_LABEL_FONT = "20pt \"Laksaman\""
+EDITTASK_DATETIMEEDIT_FONT = "18pt \"Samyak Malayalam\""
+EDITTASK_DATEEDIT_FONT = "18pt \"Samyak Malayalam\";"
+EDITTASK_TASKNAME_INPUT = "18pt \"Manjari\""
+EDITTASK_BUTTON_CONTINUE_FONT = "24pt \"Laksaman\""
+EDITTASK_BUTTON_CONTINUE_FONT_HOVER = "26pt \"Laksaman\""
+EDITTASK_LOAD_TASKS_BUTTON_FONT = "18pt \"Laksaman\""
+EDITTASK_LOAD_TASKS_BUTTON_FONT_HOVER = "20pt \"Laksaman\""
+EDITTASK_DELETE_BUTTON_FONT = "24pt \"Laksaman\""
+EDITTASK_DELETE_BUTTON_FONT_HOVER = "26pt \"Laksaman\""
+
+ACCOUNTSETTINGS_LOGGEDAS_LABEL_FONT = "18pt \"Noto Sans Mono CJK JP\""
+ACCOUNTSETTINGS_CHANGEPASSWORD_LABEL_FONT = "18pt \"Noto Sans Mono CJK JP\""
+ACCOUNTSETTINGS_PASSWORD_INPUT_FONT = "18pt \"Manjari\""
+ACCOUNTSETTINGS_CONTINUE_BUTTON_FONT = "24pt \"Laksaman\""
+ACCOUNTSETTINGS_CONTINUE_BUTTON_FONT_HOVER = "26pt \"Laksaman\""
 
 
 class RegistrationError(Exception):
@@ -114,6 +141,7 @@ class Database:
         return False
 
 
+
 KEYBOARD_RU = "ёйцукенгшщзхъфывапролджэячсмитьбю"
 KEYBOARD_EN = "qwertyuiopasdfghjklzxcvbnm"
 KEYBOARD = KEYBOARD_RU + KEYBOARD_EN
@@ -152,20 +180,20 @@ def check_username(username):
     if len(username) > 20:
         return "Username is way too long! 20 symbols is the limit!"
     for i in username:
-        if i not in KEYBOARD + "1234567890":
+        if i not in KEYBOARD + "1234567890" + KEYBOARD.upper():
             return "You may use only letters from both Russian and English alphabet and numbers in your nickname!"
     return True
 
 
 def check_email(email):
     if "@" not in email or email.count("@") > 1:
-        return "Email is incorrect1"
+        return "Email is incorrect"
     mail, service = email.split("@")
     if "." not in service or ".." in service:
-        return "Email is incorrect2"
+        return "Email is incorrect"
     for i in mail:
-        if i not in KEYBOARD + "1234567890":
-            return "Email is incorrect3"
+        if i not in KEYBOARD + "1234567890" + KEYBOARD.upper():
+            return "Email is incorrect"
     return True
 
 
@@ -174,8 +202,7 @@ GENERAL, ADDTASK, EDITTASK, ACCOUNTSETTINGS = 1, 2, 3, 4
 DEFAULT_DICTIONARY = {'0': 'o', '1': 'n', '2': 't', '3': 'h', '4': 'f', '5': 'i', '6': 's', '7': 'e', '8': 'i',
                       '9': 'j'}
 
-
-
+# DATABASE = Database(host, user, password, database)
 
 def to_formated_date(date):
     d, t = date.split(" ")
@@ -197,355 +224,324 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.frame = QtWidgets.QFrame(self.centralwidget)
         self.frame.setGeometry(QtCore.QRect(-60, -40, 801, 591))
-        self.frame.setStyleSheet("""#frame {
-	background-color: rgb(136, 136, 136);
-}
+        self.frame.setStyleSheet(u"#frame {\n"
+                                 "   background-color: rgb(136, 136, 136);\n"
+                                 "        }\n"
+                                 "\n"
+                                 "#button_general {\n"
+                                 f"  font: {MODE_BUTTONS_FONT};\n"
+                                 "   background-color:transparent;\n"
+                                 "   color:white;\n"
+                                 "   border-radius: 0px;\n"
+                                 "   border-bottom: 1px solid black;\n"
+                                 "   border-right: 1px solid black;\n"
+                                 "   border-top: 1px solid black;\n"
+                                 "        }\n"
+                                 "\n"
+                                 "        #button_addtask {\n"
+                                 f"  font: {MODE_BUTTONS_FONT};\n"
+                                 "   background-color:transparent;\n"
+                                 "   color:white;\n"
+                                 "   border-radius: 0px;\n"
+                                 "   border-bottom: 1px solid black;\n"
+                                 "   border-right: 1px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#button_edittask {\n"
+                                 f" font: {MODE_BUTTONS_FONT};\n"
+                                 "	background-color:transparent;\n"
+                                 "	color:white;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border-bottom: 1px solid black;\n"
+                                 "	border-right: 1px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#button_accountsettings {\n"
+                                 f" font: {MODE_BUTTONS_FONT};\n"
+                                 "	background-color:transparent;\n"
+                                 "	color:white;\n"
+                                 "	border-radius: "
+                                 "0px;\n"
+                                 "	border-right: 1px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#label_DPlanner {\n"
+                                 f"	font: {DPLANNER_LOGO_FONT};\n"
+                                 "	border: 1px solid black;\n"
+                                 "	border-left: 0px solid black;\n"
+                                 "	border-top: 0px solid black;\n"
+                                 "	color: white;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#button_general:hover {\n"
+                                 f"	font: {MODE_BUTTONS_FONT_HOVER};\n"
+                                 "	color:white;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#button_addtask:hover {\n"
+                                 f"	font: {MODE_BUTTONS_FONT_HOVER};\n"
+                                 "	color:white;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#button_edittask:hover {\n"
+                                 f"	font: {MODE_BUTTONS_FONT_HOVER};\n"
+                                 "	color:white;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#button_accountsettings:hover {\n"
+                                 f"	font: {MODE_BUTTONS_FONT_HOVER};\n"
+                                 "	color:white;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "#label_selected_mode {\n"
+                                 "	border: 1px solid black;\n"
+                                 "	border-left: 0px solid black;\n"
+                                 "	border-top: 0px solid black;\n"
+                                 "	border-right: 0px solid black;\n"
+                                 f"	font: {SELECTED_MODE_LABEL_FONT};\n"
+                                 "	color:white;\n"
+                                 "}\n"
+                                 "#addtask_plainTextEdit {\n"
+                                 "	color: white;\n"
+                                 "	background: transparent;\n"
+                                 "	border: 1px solid black;\n"
+                                 "}\n"
+                                 "#addtask_listWidget {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 1px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#addtask_plainTextEdit:hover {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#addtask_listWidget:hover {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#addtask_dateTimeEdit {\n"
+                                 f"	font: {ADDTASK_DATETIMEEDIT_FONT};\n"
+                                 "	color: white;\n"
+                                 "	border-radius: 1px;\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid gray;\n"
+                                 "}\n"
+                                 "#addtask_dateTimeEdit:focus {\n"
+                                 f"	font: {ADDTASK_DATETIMEEDIT_FONT};\n"
+                                 "	color: white;\n"
+                                 "	border-radius: 1px;\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid white;\n"
+                                 "}\n"
+                                 "#addtask_label_1 {\n"
+                                 "	color: white;\n"
+                                 f"	font: {ADDTASK_LABELS_FONT};\n"
+                                 "}\n"
+                                 "#addtask_label_2 {\n"
+                                 "	color: white;\n"
+                                 f"	font: {ADDTASK_LABELS_FONT};\n"
+                                 "}\n"
+                                 "#addtask_label_3 {\n"
+                                 "	color: white;\n"
+                                 f"	font: {ADDTASK_LABELS_FONT};\n"
+                                 "}\n"
+                                 "#addtask_lineEdit {\n"
+                                 "	color: white;\n"
+                                 "	background: transparent;\n"
+                                 f"	font: {ADDTASK_LINEEDIT_FONT};\n"
+                                 "	border: none;\n"
+                                 "	border-bottom: 1px solid gray;\n"
+                                 "}\n"
+                                 "#addtask_lineEdit:focus {\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid white;\n"
+                                 "}\n"
+                                 "#addtask_button_continue {\n"
+                                 "	background: transparent;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 1px solid black;\n"
+                                 "	color: white;\n"
+                                 f"	font: {ADDTASK_BUTTON_CONTINUE_FONT};\n"
+                                 "}\n"
+                                 "#addtask_button_continue:hover {\n"
+                                 "	border: 2px solid black;\n"
+                                 f"	font: {ADDTASK_BUTTON_CONTINUE_FONT_HOVER};\n"
+                                 "}\n"
+                                 "#general_label_today {\n"
+                                 "	color:white;\n"
+                                 f"	font: {GENERAL_TODAY_LABEL_FONT};\n"
+                                 "}\n"
+                                 "#general_plainTextEdit {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 1px solid black;\n"
+                                 "	color: white;\n"
+                                 "}\n"
+                                 "#general_listWidget {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 1px solid black;\n"
+                                 "	color: white;\n"
+                                 "}\n"
+                                 "#general_plainTextEdit:hover {\n"
+                                 "	background: transparent"
+                                 ";\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "#general_listWidget:hover {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "#edittask_label_select_date {\n"
+                                 "	color:white;\n"
+                                 f"	font: {EDITTASK_SELECT_DATE_LABEL_FONT};\n"
+                                 "}\n"
+                                 "#edittask_plainTextEdit {\n"
+                                 "	color: white;\n"
+                                 "	background: transparent;\n"
+                                 "	border: 1px solid black;\n"
+                                 "}\n"
+                                 "#edittask_listWidget {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 1px solid black;\n"
+                                 "	color: white;\n"
+                                 "}\n"
+                                 "#edittask_dateTimeEdit {\n"
+                                 f"	font: {EDITTASK_DATETIMEEDIT_FONT};\n"
+                                 "	color: white;\n"
+                                 "	border-radius: 1px;\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid gray;\n"
+                                 "}\n"
+                                 "#edittask_dateTimeEdit:focus {\n"
+                                 f"	font: {EDITTASK_DATETIMEEDIT_FONT};\n"
+                                 "	color: white;\n"
+                                 "	border-radius: 1px;\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid white;\n"
+                                 "}\n"
+                                 "#edittask_plainTextEdit:hover {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "#edittask_listWidget:hover {\n"
+                                 "	background: transparent;\n"
+                                 "	border: 2px solid black;\n"
+                                 "}\n"
+                                 "#edittask_dateEdit {\n"
+                                 f"	font: {EDITTASK_DATEEDIT_FONT};\n"
+                                 "	color: white;\n"
+                                 "	border-radius: 1px;\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid gray;\n"
+                                 "}\n"
+                                 "#edittask_dateEdit:focus {\n"
+                                 f"	font: {EDITTASK_DATEEDIT_FONT};\n"
+                                 "	color: white;\n"
+                                 "	border-radius: 1px;\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid white;\n"
+                                 "}\n"
+                                 "#edittask_lineEdit_task_name {\n"
+                                 "	color: white;\n"
+                                 "	background: transparent;\n"
+                                 f"	font: {EDITTASK_TASKNAME_INPUT};\n"
+                                 "	border: none;\n"
+                                 "	border-bottom: 1px solid gray;\n"
+                                 "}\n"
+                                 "#edittask_lineEdit_task_name:focus {\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid white;\n"
+                                 "}\n"
+                                 "#edittask_button_continue {\n"
+                                 "	background: transparent;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 1px solid black;\n"
+                                 "	color: white;\n"
+                                 f"	font: {EDITTASK_BUTTON_CONTINUE_FONT};\n"
+                                 "}\n"
+                                 "#edittask_button_continue:hover {\n"
+                                 "	border: 2px solid black;\n"
+                                 f"	font: {EDITTASK_BUTTON_CONTINUE_FONT_HOVER};\n"
+                                 "}\n"
+                                 "#edittask_button_load_tasks {\n"
+                                 "	background: transparent;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 1px solid black;\n"
+                                 "	color: white;\n"
+                                 f"	font: {EDITTASK_LOAD_TASKS_BUTTON_FONT};\n"
+                                 "}\n"
+                                 "#edittask_button_load_tasks:hover {\n"
+                                 "	border: 2px solid black;\n"
+                                 f"	font: {EDITTASK_LOAD_TASKS_BUTTON_FONT_HOVER};\n"
+                                 "}\n"
+                                 "#edittask_button_delete {\n"
+                                 "	background: transparent;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 1px solid black;\n"
+                                 "	color: white;\n"
+                                 f"	font: {EDITTASK_DELETE_BUTTON_FONT};\n"
+                                 "}\n"
+                                 "#edittask_button_delete:hover {\n"
+                                 "	border: 2px solid black;\n"
+                                 f"	font: {EDITTASK_DELETE_BUTTON_FONT_HOVER};\n"
+                                 "}\n"
+                                 "#accountsettings_label_logged_is_as {\n"
+                                 "	color: white;\n"
+                                 f"	font: {ACCOUNTSETTINGS_LOGGEDAS_LABEL_FONT};\n"
+                                 "}\n"
+                                 "#accountsettings_label_change_password {\n"
+                                 "	color: white;\n"
+                                 f"	font: {ACCOUNTSETTINGS_CHANGEPASSWORD_LABEL_FONT};\n"
+                                 "}\n"
+                                 "\n"
+                                 "#accountsettings_lineEdit_old_password {\n"
+                                 "	color: white;\n"
+                                 "	background: transparent;\n"
+                                 f"	font: {ACCOUNTSETTINGS_PASSWORD_INPUT_FONT};\n"
+                                 "	border: none;\n"
+                                 "	border-bottom: 1px solid gray;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#accountsettings_lineEdit_old_password:focus {\n"
+                                 ""
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid white;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#accountsettings_lineEdit_new_password {\n"
+                                 "	color: white;\n"
+                                 "	background: transparent;\n"
+                                 f"	font: {ACCOUNTSETTINGS_PASSWORD_INPUT_FONT};\n"
+                                 "	border: none;\n"
+                                 "	border-bottom: 1px solid gray;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#accountsettings_lineEdit_new_password:focus {\n"
+                                 "	background: transparent;\n"
+                                 "	border-bottom: 1px solid white;\n"
+                                 "}\n"
+                                 "\n"
+                                 "#accountsettings_button_continue_change_pass{\n"
+                                 "	background: transparent;\n"
+                                 "	border-radius: 0px;\n"
+                                 "	border: 1px solid black;\n"
+                                 "	color: white;\n"
+                                 f"	font: {ACCOUNTSETTINGS_CONTINUE_BUTTON_FONT};\n"
+                                 "}\n"
+                                 "\n"
+                                 "#accountsettings_button_continue_change_pass:hover {\n"
+                                 "	border: 2px solid black;\n"
+                                 f"	font: {ACCOUNTSETTINGS_CONTINUE_BUTTON_FONT_HOVER};\n"
+                                 "}")
 
-#button_general {
-	font: 20pt "Laksaman";
-	background-color:transparent;
-	color:white;
-	border-radius: 0px;
-	border-bottom: 1px solid black;
-	border-right: 1px solid black;
-	border-top: 1px solid black;
-}
-
-#button_addtask {
-	font: 20pt "Laksaman";
-	background-color:transparent;
-	color:white;
-	border-radius: 0px;
-	border-bottom: 1px solid black;
-	border-right: 1px solid black;
-}
-
-#button_edittask {
-	font: 20pt "Laksaman";
-	background-color:transparent;
-	color:white;
-	border-radius: 0px;
-	border-bottom: 1px solid black;
-	border-right: 1px solid black;
-}
-
-#button_accountsettings {
-	font: 20pt "Laksaman";
-	background-color:transparent;
-	color:white;
-	border-radius: 0px;
-	border-right: 1px solid black;
-}
-
-#label_DPlanner {
-	font: 0 40pt "Manjari Thin";
-	border: 1px solid black;
-	border-left: 0px solid black;
-	border-top: 0px solid black;
-	color: white;
-}
-
-#button_general:hover {
-	font: 22pt "Laksaman";
-	color:white;
-	border-radius: 0px;
-	border: 2px solid black;
-}
-
-#button_addtask:hover {
-	font: 22pt "Laksaman";
-	color:white;
-	border-radius: 0px;
-	border: 2px solid black;
-}
-
-#button_edittask:hover {
-	font: 22pt "Laksaman";
-	color:white;
-	border-radius: 0px;
-	border: 2px solid black;
-}
-
-#button_accountsettings:hover {
-	font: 22pt "Laksaman";
-	color:white;
-	border-radius: 0px;
-	border: 2px solid black;
-}
-
-#label_selected_mode {
-	border: 1px solid black;
-	border-left: 0px solid black;
-	border-top: 0px solid black;
-	border-right: 0px solid black;
-	font: 40pt "Laksaman";
-	color:white;
-}
-
-#addtask_plainTextEdit {
-	color: white;
-	background: transparent;
-	border: 1px solid black;
-}
-
-#addtask_listWidget {
-	background: transparent;
-	border: 1px solid black;
-}
-
-#addtask_plainTextEdit:hover {
-	background: transparent;
-	border: 2px solid black;
-}
-
-#addtask_listWidget:hover {
-	background: transparent;
-	border: 2px solid black;
-}
-
-#addtask_dateTimeEdit {
-	font: 18pt "Samyak Malayalam";
-	color: white;
-	border-radius: 1px;
-	background: transparent;
-	border-bottom: 1px solid gray;
-}
-
-#addtask_dateTimeEdit:focus {
-	font: 18pt "Samyak Malayalam";
-	color: white;
-	border-radius: 1px;
-	background: transparent;
-	border-bottom: 1px solid white;
-}
-
-#addtask_label_1 {
-	color: white;
-	font: 18pt "Noto Sans Mono CJK JP";
-}
-
-#addtask_label_2 {
-	color: white;
-	font: 18pt "Noto Sans Mono CJK JP";
-}
-
-#addtask_label_3 {
-	color: white;
-	font: 18pt "Noto Sans Mono CJK JP";
-}
-
-#addtask_lineEdit {
-	color: white;
-	background: transparent;
-	font: 18pt "Manjari";
-	border: none;
-	border-bottom: 1px solid gray;
-}
-
-#addtask_lineEdit:focus {
-	background: transparent;
-	border-bottom: 1px solid white;
-}
-
-#addtask_button_continue {
-	background: transparent;
-	border-radius: 0px;
-	border: 1px solid black;
-	color: white;
-	font: 24pt "Laksaman";
-}
-
-#addtask_button_continue:hover {
-	border: 2px solid black;
-	font: 26pt "Laksaman";
-}
-
-#general_label_today {
-	color:white;
-	font: 30pt "Laksaman";
-}
-
-#general_plainTextEdit {
-	background: transparent;
-	border: 1px solid black;
-	color: white;
-}
-
-#general_listWidget {
-	background: transparent;
-	border: 1px solid black;
-	color: white;
-}
-
-#general_plainTextEdit:hover {
-	background: transparent;
-	border: 2px solid black;
-}
-
-#general_listWidget:hover {
-	background: transparent;
-	border: 2px solid black;
-}
-
-#edittask_label_select_date {
-	color:white;
-	font: 20pt "Laksaman";
-}
-
-#edittask_plainTextEdit {
-	color: white;
-	background: transparent;
-	border: 1px solid black;
-}
-
-#edittask_listWidget {
-	background: transparent;
-	border: 1px solid black;
-	color: white;
-}
-
-#edittask_dateTimeEdit {
-	font: 18pt "Samyak Malayalam";
-	color: white;
-	border-radius: 1px;
-	background: transparent;
-	border-bottom: 1px solid gray;
-}
-
-#edittask_dateTimeEdit:focus {
-	font: 18pt "Samyak Malayalam";
-	color: white;
-	border-radius: 1px;
-	background: transparent;
-	border-bottom: 1px solid white;
-}
-
-#edittask_plainTextEdit:hover {
-	background: transparent;
-	border: 2px solid black;
-}
-
-#edittask_listWidget:hover {
-	background: transparent;
-	border: 2px solid black;
-}
-
-#edittask_dateEdit {
-	font: 18pt "Samyak Malayalam";
-	color: white;
-	border-radius: 1px;
-	background: transparent;
-	border-bottom: 1px solid gray;
-}
-
-#edittask_dateEdit:focus {
-	font: 18pt "Samyak Malayalam";
-	color: white;
-	border-radius: 1px;
-	background: transparent;
-	border-bottom: 1px solid white;
-}
-
-#edittask_lineEdit_task_name {
-	color: white;
-	background: transparent;
-	font: 18pt "Manjari";
-	border: none;
-	border-bottom: 1px solid gray;
-}
-
-#edittask_lineEdit_task_name:focus {
-	background: transparent;
-	border-bottom: 1px solid white;
-}
-
-#edittask_button_continue {
-	background: transparent;
-	border-radius: 0px;
-	border: 1px solid black;
-	color: white;
-	font: 24pt "Laksaman";
-}
-
-#edittask_button_continue:hover {
-	border: 2px solid black;
-	font: 26pt "Laksaman";
-}
-
-#edittask_button_load_tasks {
-	background: transparent;
-	border-radius: 0px;
-	border: 1px solid black;
-	color: white;
-	font: 18pt "Laksaman";
-}
-
-#edittask_button_load_tasks:hover {
-	border: 2px solid black;
-	font: 20pt "Laksaman";
-}
-
-#edittask_button_delete {
-	background: transparent;
-	border-radius: 0px;
-	border: 1px solid black;
-	color: white;
-	font: 24pt "Laksaman";
-}
-
-#edittask_button_delete:hover {
-	border: 2px solid black;
-	font: 26pt "Laksaman";
-}
-
-#accountsettings_label_logged_is_as {
-	color: white;
-	font: 18pt "Noto Sans Mono CJK JP";
-}
-
-#accountsettings_label_change_password {
-	color: white;
-	font: 18pt "Noto Sans Mono CJK JP";
-}
-
-#accountsettings_lineEdit_old_password {
-	color: white;
-	background: transparent;
-	font: 18pt "Manjari";
-	border: none;
-	border-bottom: 1px solid gray;
-}
-
-#accountsettings_lineEdit_old_password:focus {
-	background: transparent;
-	border-bottom: 1px solid white;
-}
-
-#accountsettings_lineEdit_new_password {
-	color: white;
-	background: transparent;
-	font: 18pt "Manjari";
-	border: none;
-	border-bottom: 1px solid gray;
-}
-
-#accountsettings_lineEdit_new_password:focus {
-	background: transparent;
-	border-bottom: 1px solid white;
-}
-
-#accountsettings_button_continue_change_pass{
-	background: transparent;
-	border-radius: 0px;
-	border: 1px solid black;
-	color: white;
-	font: 24pt "Laksaman";
-}
-
-#accountsettings_button_continue_change_pass:hover {
-	border: 2px solid black;
-	font: 26pt "Laksaman";
-}""")
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
@@ -585,61 +581,52 @@ class Ui_Login(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setFixedSize(640, 420)
         MainWindow.setAutoFillBackground(False)
-        MainWindow.setStyleSheet("""#frame {
-	border-radius: 30px;
-	background-color: rgb(121, 121, 121);
-	border-width: 30px;
-}
-
-#label {
-	font: 75 40pt "Uroob";
-	color: white;
-}
-
-#label_2 {
-	color: white;
-	font: 75 14pt "Uroob";
-}
-
-QLineEdit {
-	background: transparent;
-	border: none;
-	color: #999;
-	border-bottom: 1px solid #717072
-}
-
-#pushButton {
-	background-color:transparent;
-	border:2px solid #dcdcdc;
-	color:#666666;
-	
-	font: 75 22pt "Uroob";
-	border-radius: 25px;
-}
-#pushButton:hover {
-	background-color:white;
-}
-
-QLineEdit:focus {
-	background: transparent;
-	border: none;
-	color: #999;
-	border-bottom: 2px solid rgb(255, 255, 255)
-}
-
-#pushButton_2 {
-	background-color: rgb(121, 121, 121);
-	border:2px solid #dcdcdc;
-	color:#666666;
-	
-	font: 75 22pt "Uroob";
-	border-radius: 25px;
-}
-
-#pushButton_2:hover {
-	background-color:rgb(255, 255, 255);
-	border:3px solid rgb(255, 255, 255);
-}""")
+        MainWindow.setStyleSheet("#frame {\n"
+                                 "	border-radius: 30px;\n"
+                                 "	background-color: rgb(121, 121, 121);\n"
+                                 "	border-width: 30px;\n"
+                                 "}\n"
+                                 "#label {\n"
+                                 f"	font: {LOGIN_DPLANNER_LOGO_FONT};\n"
+                                 "	color: white;\n"
+                                 "}\n"
+                                 "#label_2 {\n"
+                                 "	color: white;\n"
+                                 f"	font: {USING_ACCOUNT_LABEL_FONT};\n"
+                                 "}\n"
+                                 "QLineEdit {\n"
+                                 "	background: transparent;\n"
+                                 "	border: none;\n"
+                                 "	color: #999;\n"
+                                 "	border-bottom: 1px solid #717072\n"
+                                 "}\n"
+                                 "#pushButton {\n"
+                                 "	background-color:transparent;\n"
+                                 "	border:2px solid #dcdcdc;\n"
+                                 "	color:#666666;\n"
+                                 f"	font: {BUTTON_FONT};\n"
+                                 "	border-radius: 25px;\n"
+                                 "}\n"
+                                 "#pushButton:hover {\n"
+                                 "	background-color:white;\n"
+                                 "}\n"
+                                 "QLineEdit:focus {\n"
+                                 "	background: transparent;\n"
+                                 "	border: none;\n"
+                                 "	color: #999;\n"
+                                 "	border-bottom: 2px solid rgb(255, 255, 255)\n"
+                                 "}\n"
+                                 "#pushButton_2 {\n"
+                                 "	background-color: rgb(121, 121, 121);\n"
+                                 "	border:2px solid #dcdcdc;\n"
+                                 "	color:#666666;\n"
+                                 f"	font: {BUTTON_FONT};\n"
+                                 "	border-radius: 25px;\n"
+                                 "}\n"
+                                 "#pushButton_2:hover {\n"
+                                 "	background-color:rgb(255, 255, 255);\n"
+                                 "	border:3px solid rgb(255, 255, 255);\n"
+                                 "}")
         pictures = ["fox-1883658_640.png",
                     "peak-5645235_640.jpg",
                     "jusang-joint-4810725_640.jpg",
@@ -768,6 +755,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             msg.setWindowTitle("Failure")
             x = msg.exec_()
             return
+        if "\"" in description or "'" in description or "\"" in title or "'" in title:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Sorry, but you can't use neither ' nor \" symbol!")
+            msg.setWindowTitle("Failure")
+            x = msg.exec_()
+            return
         date = to_formated_date(self.addtask_dateTimeEdit.text())
         DATABASE.add_task(self.tablename, title, description, date)
         msg = QMessageBox()
@@ -800,22 +794,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             x = msg.exec_()
 
     def edittask_button_continue_clicked(self):
-        if self.edittask_lineEdit_task_name.text() == "" or len(self.edittask_lineEdit_task_name.text()) > 70:
+        title = self.edittask_lineEdit_task_name.text()
+        description = self.edittask_plainTextEdit.toPlainText()
+        if title == "" or title > 70:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setText("Task title neither may be empty nor contain more than 70 symbols!")
             msg.setWindowTitle("Failure")
             x = msg.exec_()
             return
-        if len(self.edittask_plainTextEdit.toPlainText()) > 700:
+        if description > 700:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setText("Task description may not contain more than 700 symbols!")
             msg.setWindowTitle("Failure")
             x = msg.exec_()
             return
-        DATABASE.edit_task(self.tablename, self.edittask_selected_id, self.edittask_lineEdit_task_name.text(),
-                           self.edittask_plainTextEdit.toPlainText(),
+        if "\"" in description or "'" in description or "\"" in title or "'" in title:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Sorry, but you can't use neither ' nor \" symbol!")
+            msg.setWindowTitle("Failure")
+            x = msg.exec_()
+            return
+        DATABASE.edit_task(self.tablename, self.edittask_selected_id, title, description,
                            to_formated_date(self.edittask_dateTimeEdit.text()))
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
@@ -1224,11 +1226,21 @@ class LoginWindow(Ui_Login, QMainWindow):
 
     def authorisation(self):
         username, password = self.lineEdit.text(), self.lineEdit_2.text()
+        if "\"" in username or "'" in username or "\"" in password or "'" in password:
+            self.messagebox("Sorry, but you cant use neither \" nor ' symbols!", QMessageBox.Critical, "Failure")
+            return
         result = DATABASE.login(username, password)
         if result:
             mw = MainWindow(self, username, result)
         else:
             self.messagebox("Invalid login or password", QMessageBox.Warning, "Failure")
+
+    def keyPressEvent(self, event):
+        if event.key() == 16777220:
+            if self.current_mode == 0:
+                self.authorisation()
+            elif self.current_mode == 1:
+                self.registration()
 
 
 def except_hook(cls, exception, traceback):
