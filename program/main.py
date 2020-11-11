@@ -202,7 +202,7 @@ GENERAL, ADDTASK, EDITTASK, ACCOUNTSETTINGS = 1, 2, 3, 4
 DEFAULT_DICTIONARY = {'0': 'o', '1': 'n', '2': 't', '3': 'h', '4': 'f', '5': 'i', '6': 's', '7': 'e', '8': 'i',
                       '9': 'j'}
 
-# DATABASE = Database(host, user, password, database)
+DATABASE = Database("mysql.joinserver.ru", "u16506_kpecHjgBfL", "FJC5dDEgdA2jqdBkjFMwNsty", "s16506_test1")
 
 def to_formated_date(date):
     d, t = date.split(" ")
